@@ -14,4 +14,10 @@ This one click deployment will build a Docker on Windows Development box in Azur
 
 **Creds**
 1. User: stormtrooperio
-2. Password: Password.1!!
+1. Password: Password.1!!
+
+**Starting Docker**
+1. Once the VM is deployed use the Azure portal to connect.
+1. Double click the Docker for Windows shortcut on the desktop.
+1. It will take a few minutes for Docker to start the first time.
+![alt text](https://github.com/deltadan/media/raw/master/dockerrun.png "Docker is Running on Windows 10 in Azure!")
