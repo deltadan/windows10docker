@@ -8,8 +8,6 @@ Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.We
 #Assign Packages to Install
 $Packages = 'googlechrome',`
             'docker-for-windows',`
-            'postman',`
-            'nodejs.install',`
             'visualstudiocode',`
             'git',`
             'visualstudio2017community',`
@@ -36,13 +34,12 @@ Invoke-Expression -Command:$command2
 
 #Install Visual Studio Code Extensions
 & 'C:\Program Files\Microsoft VS Code\bin\code.cmd' --install-extension ms-vscode.csharp
-& 'C:\Program Files\Microsoft VS Code\bin\code.cmd' --install-extension vsciot-vscode.azure-iot-edge
 
 #Add Demo User to docker group
 Add-LocalGroupMember -Member demouser -Group docker-users
 
 #Bring down Desktop Shortcuts
-$zipDownload = "https://github.com/solliancenet/LABVM/blob/master/iotforbiz/shortcuts.zip?raw=true"
+$zipDownload = "https://github.com/deltdan/windows10docker/blob/master/shortcuts.zip?raw=true"
 $downloadedFile = "D:\shortcuts.zip"
 $vmFolder = "C:\Users\Public\Desktop"
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
