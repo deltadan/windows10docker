@@ -22,10 +22,10 @@ ForEach ($PackageName in $Packages)
 
 #Update Visual Studio
 $command1 = @'
-cmd.exe /C C:\Users\demouser\AppData\Local\Temp\chocolatey\visualstudio2017community\15.2.26430.20170605\vs_community.exe --update --quiet --wait
+cmd.exe /C C:\Users\stormtrooperio\AppData\Local\Temp\chocolatey\visualstudio2017community\15.2.26430.20170605\vs_community.exe --update --quiet --wait
 '@
 $command2 = @'
-cmd.exe /C C:\Users\demouser\AppData\Local\Temp\chocolatey\visualstudio2017community\15.2.26430.20170605\vs_community.exe --update --quiet --wait --passive --norestart --installPath `
+cmd.exe /C C:\Users\stormtrooperio\AppData\Local\Temp\chocolatey\visualstudio2017community\15.2.26430.20170605\vs_community.exe --update --quiet --wait --passive --norestart --installPath `
 "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community"
 '@
 Set-ExecutionPolicy Bypass -Scope Process -Force
@@ -36,10 +36,10 @@ Invoke-Expression -Command:$command2
 & 'C:\Program Files\Microsoft VS Code\bin\code.cmd' --install-extension ms-vscode.csharp
 
 #Add Demo User to docker group
-Add-LocalGroupMember -Member demouser -Group docker-users
+Add-LocalGroupMember -Member stormtrooperio -Group docker-users
 
 #Bring down Desktop Shortcuts
-$zipDownload = "https://github.com/deltdan/windows10docker/blob/master/shortcuts.zip?raw=true"
+$zipDownload = "https://github.com/deltadan/windows10docker/blob/master/shortcuts.zip?raw=true"
 $downloadedFile = "D:\shortcuts.zip"
 $vmFolder = "C:\Users\Public\Desktop"
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
