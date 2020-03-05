@@ -1,86 +1,143 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "LABVMDnsName": {
+    "adminUsername": {
       "type": "string",
-      "defaultValue": "labvmdnsnameupdateme",
-      "minLength": 1
+      "metadata": {
+        "description": "Username for the Virtual Machine."
+      }
+    },
+    "adminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Password for the Virtual Machine."
+      }
+    },
+    "dnsLabelPrefix": {
+      "type": "string",
+      "defaultValue": "[concat('docker-desktop-', uniqueString(resourceGroup().id))]",
+      "metadata": {
+        "description": "Unique DNS Name for the Public IP used to access the Virtual Machine."
+      }
+    },
+    "adminSourceIpAddress": {
+      "type": "string",
+      "defaultValue": "*",
+      "metadata": {
+        "description": "Enter your IP address, x.x.x.x/32 (use ipchicken.com to find this)"
+      }
     }
   },
   "variables": {
-    "LABVMVNETPrefix": "192.168.0.0/24",
-    "LABVMVNETSubnet1Name": "LABVM",
-    "LABVMVNETSubnet1Prefix": "192.168.0.0/24",
-    "LABVMName": "LABVM",
-    "LABVMAdminUserName": "stormtrooperio",
-    "LABVMAdminPassword": "Password.1!!",
-    "LABVMImagePublisher": "MicrosoftWindowsDesktop",
-    "LABVMImageOffer": "office-365",
-    "LABVMWindowsOSVersion": "1903-evd-o365pp",
-    "LABVMOSDiskName": "[concat(variables('LABVMName'), '-OSDISK')]",
-    "LABVMVmSize": "Standard_D4s_v3",
-    "LABVMVnetID": "[resourceId('Microsoft.Network/virtualNetworks', 'LABVMVNET')]",
-    "LABVMSubnetRef": "[concat(variables('LABVMVnetID'), '/subnets/', variables('LABVMVNETSubnet1Name'))]",
-    "LABVMNicName": "[concat(variables('LABVMName'), '-NIC')]",
-    "LABVM-PUBIPName": "[concat(variables('LABVMName'), '-PIP')]",
-    "LABVMInstallHyperVScriptFolder": ".",
-    "LABVMInstallHyperVScriptFileName": "InstallLabVM.ps1",
-    "LABVMInstallHyperVURL": "https://raw.githubusercontent.com/deltadan/windows10docker/master/InstallLabVM.ps1"
+    "GitHubScriptRepo": "deltadan/windows10docker",
+    "GitHubScriptRepoBranch": "master",
+    "GitHubScriptRepoBranchURL": "[concat('https://raw.githubusercontent.com/', variables('GitHubScriptRepo'), '/', variables('GitHubScriptRepoBranch'))]",
+    "azKungFuVmVnetName": "docker-desktop-vm-vnet",
+    "azKungFuVmVnetPrefix": "192.168.0.0/24",
+    "azKungFuVmVnetSubnet1Name": "docker-desktop-vm",
+    "azKungFuVmSubnet1Prefix": "192.168.0.0/24",
+    "azKungFuVmNsgName": "docker-desktop-vm-nsg",
+    "azKungFuVmName": "docker-desktop-vm",
+    "azKungFuVmImagePublisher": "MicrosoftWindowsDesktop",
+    "azKungFuVmImageOffer": "office-365",
+    "azKungFuVmWindowsOSVersion": "1903-evd-o365pp",
+    "azKungFuVmVmSize": "Standard_D4s_v3",
+    "azKungFuVmID": "[resourceId('Microsoft.Network/virtualNetworks', 'docker-desktop-vm-vnet')]",
+    "azKungFuVmSubnetRef": "[concat(variables('azKungFuVmID'), '/subnets/', variables('azKungFuVmVnetSubnet1Name'))]",
+    "azKungFuVmNicName": "[concat(variables('azKungFuVmName'), '-nic')]",
+    "azKungFuVm-PUBIPName": "[concat(variables('azKungFuVmName'), '-pip')]",
+    "azKungFuVmInstallScriptFolder": ".",
+    "azKungFuVmInstallScriptFileName": "configazkungfuvm.ps1",
+    "azKungFuVmInstallURL": "[concat(variables('GitHubScriptRepoBranchURL'), '/', variables('azKungFuVmInstallScriptFileName'))]"
   },
   "resources": [
     {
-      "name": "LABVMVNET",
-      "type": "Microsoft.Network/virtualNetworks",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2019-09-01",
+      "name": "[variables('azKungFuVmNsgName')]",
       "location": "[resourceGroup().location]",
-      "apiVersion": "2016-03-30",
-      "dependsOn": [],
-      "tags": {
-        "displayName": "LABVMVNET"
-      },
       "properties": {
-        "addressSpace": {
-          "addressPrefixes": [
-            "[variables('LABVMVNETPrefix')]"
-          ]
-        },
-        "subnets": [
+        "securityRules": [
           {
-            "name": "[variables('LABVMVNETSubnet1Name')]",
+            "name": "RDP",
             "properties": {
-              "addressPrefix": "[variables('LABVMVNETSubnet1Prefix')]"
+              "protocol": "TCP",
+              "sourcePortRange": "*",
+              "destinationPortRange": "3389",
+              "sourceAddressPrefix": "[parameters('adminSourceIpAddress')]",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 300,
+              "direction": "Inbound",
+              "sourcePortRanges": [
+              ],
+              "destinationPortRanges": [
+              ],
+              "sourceAddressPrefixes": [
+              ],
+              "destinationAddressPrefixes": [
+              ]
             }
           }
         ]
       }
     },
     {
-      "name": "[variables('LABVM-PUBIPName')]",
+      "name": "[variables('azKungFuVmVnetName')]",
+      "type": "Microsoft.Network/virtualNetworks",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2016-03-30",
+      "dependsOn": [
+      ],
+      "tags": {
+        "Visit": "http://azkungfu.io"
+      },
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[variables('azKungFuVmVnetPrefix')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[variables('azKungFuVmVnetSubnet1Name')]",
+            "properties": {
+              "addressPrefix": "[variables('azKungFuVmSubnet1Prefix')]"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "[variables('azKungFuVm-PUBIPName')]",
       "type": "Microsoft.Network/publicIPAddresses",
       "location": "[resourceGroup().location]",
       "apiVersion": "2017-10-01",
-      "dependsOn": [],
+      "dependsOn": [
+      ],
       "tags": {
-        "displayName": "LABVM-PUBIP"
+        "Visit": "http://azkungfu.io"
       },
       "properties": {
         "publicIPAllocationMethod": "Dynamic",
         "dnsSettings": {
-          "domainNameLabel": "[parameters('LABVMDnsName')]"
+          "domainNameLabel": "[parameters('dnsLabelPrefix')]"
         }
       }
     },
     {
-      "name": "[variables('LABVMNicName')]",
+      "name": "[variables('azKungFuVmNicName')]",
       "type": "Microsoft.Network/networkInterfaces",
       "location": "[resourceGroup().location]",
       "apiVersion": "2017-10-01",
       "dependsOn": [
-        "[resourceId('Microsoft.Network/virtualNetworks', 'LABVMVNET')]",
-        "[resourceId('Microsoft.Network/publicIPAddresses', variables('LABVM-PUBIPName'))]"
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('azKungFuVmVnetName'))]",
+        "[resourceId('Microsoft.Network/publicIPAddresses', variables('azKungFuVm-PUBIPName'))]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups', variables('azKungFuVmNsgName'))]"
       ],
       "tags": {
-        "displayName": "LABVMNic"
+        "Visit": "http://azkungfu.io"
       },
       "properties": {
         "ipConfigurations": [
@@ -89,83 +146,87 @@
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
               "subnet": {
-                "id": "[variables('LABVMSubnetRef')]"
+                "id": "[variables('azKungFuVmSubnetRef')]"
               },
               "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('LABVM-PUBIPName'))]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('azKungFuVm-PUBIPName'))]"
               }
             }
           }
-        ]
+        ],
+        "networkSecurityGroup": {
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('azKungFuVmNsgName'))]"
+        }
       }
     },
     {
-      "name": "[variables('LABVMName')]",
+      "name": "[variables('azKungFuVmName')]",
       "type": "Microsoft.Compute/virtualMachines",
       "location": "[resourceGroup().location]",
       "apiVersion": "2017-12-01",
       "dependsOn": [
-        "[resourceId('Microsoft.Network/networkInterfaces', variables('LABVMNicName'))]"
+        "[resourceId('Microsoft.Network/networkInterfaces', variables('azKungFuVmNicName'))]"
       ],
       "tags": {
-        "displayName": "LABVM"
+        "Visit": "http://azkungfu.io"
       },
       "properties": {
         "hardwareProfile": {
-          "vmSize": "[variables('LABVMVmSize')]"
+          "vmSize": "[variables('azKungFuVmVmSize')]"
         },
         "osProfile": {
-          "computerName": "[variables('LABVMName')]",
-          "adminUsername": "[variables('LABVMAdminUsername')]",
-          "adminPassword": "[variables('LABVMAdminPassword')]"
+          "computerName": "[variables('azKungFuVmName')]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]"
         },
         "storageProfile": {
           "imageReference": {
-            "publisher": "[variables('LABVMImagePublisher')]",
-            "offer": "[variables('LABVMImageOffer')]",
-            "sku": "[variables('LABVMWindowsOSVersion')]",
+            "publisher": "[variables('azKungFuVmImagePublisher')]",
+            "offer": "[variables('azKungFuVmImageOffer')]",
+            "sku": "[variables('azKungFuVmWindowsOSVersion')]",
             "version": "latest"
           },
           "osDisk": {
             "createOption": "FromImage",
-            "diskSizeGB": 1023
+            "diskSizeGB": 2048
           }
         },
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('LABVMNicName'))]"
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('azKungFuVmNicName'))]"
             }
           ]
         }
       },
       "resources": [
         {
-          "name": "InstallLabVMApps",
+          "name": "InstallazKungFuVmApps",
           "type": "extensions",
           "location": "[resourceGroup().location]",
           "apiVersion": "2017-12-01",
           "dependsOn": [
-            "[resourceId('Microsoft.Compute/virtualMachines', variables('LABVMName'))]"
-           ],
+            "[resourceId('Microsoft.Compute/virtualMachines', variables('azKungFuVmName'))]"
+          ],
           "tags": {
-            "displayName": "Install LabVM Applications"
+            "Visit": "http://azkungfu.io"
           },
           "properties": {
             "publisher": "Microsoft.Compute",
             "type": "CustomScriptExtension",
-            "typeHandlerVersion": "1.4",
+            "typeHandlerVersion": "1.9",
             "autoUpgradeMinorVersion": true,
             "settings": {
               "fileUris": [
-                "[variables('LABVMInstallHyperVURL')]"
+                "[variables('azKungFuVmInstallURL')]"
               ],
-              "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ', variables('LABVMInstallHyperVScriptFolder'), '/', variables('LABVMInstallHyperVScriptFileName'))]"
+              "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ', variables('azKungFuVmInstallScriptFolder'), '/', variables('azKungFuVmInstallScriptFileName'))]"
             }
           }
         }
       ]
     }
   ],
-  "outputs": {}
+  "outputs": {
+  }
 }
