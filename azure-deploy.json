@@ -38,7 +38,7 @@
     "azKungFuVmVnetSubnet1Name": "docker-vm",
     "azKungFuVmSubnet1Prefix": "192.168.0.0/24",
     "azKungFuVmNsgName": "docker-vm-nsg",
-    "azKungFuVmName": "docker-vm",
+    "azKungFuVmName": "dockervm",
     "azKungFuVmImagePublisher": "MicrosoftWindowsDesktop",
     "azKungFuVmImageOffer": "office-365",
     "azKungFuVmWindowsOSVersion": "1903-evd-o365pp",
