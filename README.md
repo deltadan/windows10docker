@@ -8,9 +8,8 @@ This one click deployment will build a Docker on Windows Development box in Azur
 **Software included on the VM**
 
 1. Docker for Windows Community Edition
-1. Visual Studio Community 2017 with Updates (.NET Desktop Environment, ASP and Web Development and Azure SDK)
 1. Git for Windows (bash)
-1. Visual Studio Code (Omnisharp CSharp)
+1. Visual Studio Code
 
 **Creds**
 1. User: stormtrooperio
