@@ -11,9 +11,12 @@ This one click deployment will build a Docker on Windows Development box in Azur
 1. Git for Windows (bash)
 1. Visual Studio Code
 
-**Creds**
-1. User: stormtrooperio
-1. Password: Password.1!!
+## Credentials
+1. User: Supplied on deploy
+1. Password: Supplied on deploy
+
+## IP for NSG
+1. Make sure to set your IP Address in the NSG on deploy - default is open to *
 
 **Starting Docker**
 1. Once the VM is deployed use the Azure portal to connect.
