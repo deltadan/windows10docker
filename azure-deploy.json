@@ -16,7 +16,7 @@
     },
     "dnsLabelPrefix": {
       "type": "string",
-      "defaultValue": "[concat('docker-desktop-', uniqueString(resourceGroup().id))]",
+      "defaultValue": "[concat('docker-', uniqueString(resourceGroup().id))]",
       "metadata": {
         "description": "Unique DNS Name for the Public IP used to access the Virtual Machine."
       }
@@ -33,17 +33,17 @@
     "GitHubScriptRepo": "deltadan/windows10docker",
     "GitHubScriptRepoBranch": "master",
     "GitHubScriptRepoBranchURL": "[concat('https://raw.githubusercontent.com/', variables('GitHubScriptRepo'), '/', variables('GitHubScriptRepoBranch'))]",
-    "azKungFuVmVnetName": "docker-desktop-vm-vnet",
+    "azKungFuVmVnetName": "docker-vm-vnet",
     "azKungFuVmVnetPrefix": "192.168.0.0/24",
-    "azKungFuVmVnetSubnet1Name": "docker-desktop-vm",
+    "azKungFuVmVnetSubnet1Name": "docker-vm",
     "azKungFuVmSubnet1Prefix": "192.168.0.0/24",
-    "azKungFuVmNsgName": "docker-desktop-vm-nsg",
-    "azKungFuVmName": "docker-desktop-vm",
+    "azKungFuVmNsgName": "docker-vm-nsg",
+    "azKungFuVmName": "docker-vm",
     "azKungFuVmImagePublisher": "MicrosoftWindowsDesktop",
     "azKungFuVmImageOffer": "office-365",
     "azKungFuVmWindowsOSVersion": "1903-evd-o365pp",
     "azKungFuVmVmSize": "Standard_D4s_v3",
-    "azKungFuVmID": "[resourceId('Microsoft.Network/virtualNetworks', 'docker-desktop-vm-vnet')]",
+    "azKungFuVmID": "[resourceId('Microsoft.Network/virtualNetworks', 'docker-vm-vnet')]",
     "azKungFuVmSubnetRef": "[concat(variables('azKungFuVmID'), '/subnets/', variables('azKungFuVmVnetSubnet1Name'))]",
     "azKungFuVmNicName": "[concat(variables('azKungFuVmName'), '-nic')]",
     "azKungFuVm-PUBIPName": "[concat(variables('azKungFuVmName'), '-pip')]",
