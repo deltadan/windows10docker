@@ -2,7 +2,7 @@
 This one click deployment will build a Docker on Windows Development box in Azure.
 
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdeltadan%2Fwindows10docker%2Fmaster%2Fazure-deploy.json" target="_blank">
-    <img src="http://azuredeploy.net/deploybutton.png"/>
+    <img src="https://github.com/deltadan/windows10docker/blob/master/media/Deploy-to-Azure-button.png"/>
 </a>
 
 **Software included on the VM**
