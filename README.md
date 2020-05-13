@@ -21,7 +21,7 @@ This one click deployment will build a Docker on Windows Development box in Azur
 **Starting Docker**
 1. Once the VM is deployed use the Azure portal to connect.
 1. Open the Computer Management Tool and add yourself to the docker-users group
-![alt text](https://github.com/deltadan/windows10docker/blob/master/media/dockeusers.png "User ID must be in the docker-users group")
+![alt text](https://github.com/deltadan/windows10docker/blob/master/media/dockerusers.png "User ID must be in the docker-users group")
 1. Logout of the VM, and then reconnect with RDP
 1. Double click the Docker for Windows shortcut on the desktop.
 1. It will take a few minutes for Docker to start the first time.
