@@ -10,6 +10,7 @@ This one click deployment will build a Docker on Windows Development box in Azur
 1. Docker for Windows Community Edition
 1. Git for Windows (bash)
 1. Visual Studio Code
+1. Google Chrome
 
 ## Credentials
 1. User: Supplied on deploy
